@@ -5,14 +5,16 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.util.concurrent.*;
 
 //TODO добавить вызов доп окна с текстом задачи и кнопками "Завершнить" и "Отложить (25мин)"
 public class Alarms {
 
+    //pool for a schedule
     ScheduledExecutorService exe = Executors.newScheduledThreadPool(1);
+
+    List<Future<Task>> futures = new ArrayList<>();
 
     void makeAlarm(ArrayList<Task> tasks){
 
@@ -23,13 +25,41 @@ public class Alarms {
     }
 
     void addAlarm(Task task){
-
         LocalDateTime dateOfTask = LocalDateTime.ofInstant(task.getDateOfAlarm().toInstant(), ZoneId.systemDefault());
+        TaskCallables.AddTask newTask = new TaskCallables.AddTask(task);
+        FutureTask<Task> futureTask = new FutureTask<>(newTask);
         exe.schedule(
-                () -> System.out.println("Executed at:" + (new Date())),
+                futureTask, //Callable, тест, вместо запуска уведомления о задаче с кнопками "Завершнить" и "Отложить (25мин)"
                 LocalDateTime.now().until(dateOfTask, ChronoUnit.SECONDS),
                 TimeUnit.SECONDS);
+        futures.add(futureTask);
+    }
+
+    void updateAlarm(Task task){
+        int index = task.getId();
+        futures.get(index-1).cancel(true);
+        addAlarm(task);
+    }
+
+    void deleteAlarm(Task task){
+        int index = task.getId();
+        futures.get(index-1).cancel(true);
+    }
+
+
+
+
+
+
+/*
+
+
+
+    void addAlarm(Task task){
+
+
 
     }
+*/
 
 }

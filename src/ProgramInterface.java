@@ -147,8 +147,16 @@ public class ProgramInterface extends Application {
                 try {
                     actions.updateTask(selectedTask, journal, name.getText(), mainText.getText(),
                             dateFormat.parse(dateOfAlarm.getText()), contacts.getText());
+                    int index = selectedTask.getId();
+
+                    //Поскольку при обновлении по кнопке экземпляр таски selectedTask не обновляется, приходится обращаться
+                    //таким образом к уже обновленной таске и передавать её в метод обновления уведомлений
+                    ArrayList<Task> journalTasks = journal.getTasks();
+                    Task task = journalTasks.get(index-1);
+                    alarms.updateAlarm(task);
+
                 } catch (ParseException e) {
-                    System.out.println("There is something wrong with date format!" );
+                    System.out.println("There is something wrong with updating!" );
                 }
                 taskTable.refresh();
 
@@ -160,6 +168,7 @@ public class ProgramInterface extends Application {
             public void handle(ActionEvent actionEvent) {
 
                 actions.deleteTask(selectedTask, journal);
+                alarms.deleteAlarm(selectedTask);
                 taskTable.getItems().remove(selectedTask.getId()-1);
                 taskTable.refresh();
 
