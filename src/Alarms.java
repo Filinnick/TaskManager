@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-//TODO добавить вызов доп окна с текстом задачи и кнопками "Завершнить" и "Отложить (25мин)"
 public class Alarms {
     ScheduledThreadPoolExecutor exe = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(5);
 
